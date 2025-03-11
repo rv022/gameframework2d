@@ -3,6 +3,7 @@
 
 #include "gfc_text.h"
 #include "gfc_vector.h"
+#include "gfc_shape.h"
 #include "gf2d_sprite.h"
 
 typedef struct Entity_S //forward declaring struct while defining it
@@ -14,9 +15,14 @@ typedef struct Entity_S //forward declaring struct while defining it
     GFC_Vector2D    position; /**<where to draw it*/
     GFC_Vector2D    velocity; /**<how we are moving*/
     GFC_Vector2D    acceleration; /**<how we are moving*/
+    GFC_Rect        box; /**<bounding box*/
+    int directionLeft; //0 is not moving, 1 if is
+    int directionRight; //0 is not moving, 1 if is
+    int jump; //0 is not moving, 1 if is
     void (*think)(struct Entity_S *self);
     void (*update)(struct Entity_S *self);
     void (*free)(struct Entity_S *self);
+    void(*collide)(struct Entity_S *self);
     void *data;
 }Entity;
 
@@ -40,6 +46,10 @@ Entity *entity_new();
 void entity_free(Entity *self);
 
 void entity_system_think();
+
+void entity_collide();
+
+void entity_system_collision();
 
 void entity_system_update();
 

@@ -70,6 +70,37 @@ Entity *entity_new()
     return NULL;
 }
 
+void entity_collide(Entity *self)
+{
+        if(!self)return;
+        if(self->collide)self->collide(self);
+}
+
+void entity_system_collision()
+{
+    int i,j;
+    if(entity_system.entity_list)
+    {
+        for(i = 0; i<entity_system.entity_max;i++)
+        {
+            if(entity_system.entity_list[i]._inuse)
+            {
+                for(j = 0; j<entity_system.entity_max;j++)
+                {
+                    if(entity_system.entity_list[j]._inuse)
+                    {
+                        if(i!=j)
+                        {
+                            if(gfc_rect_overlap(entity_system.entity_list[i].box,entity_system.entity_list[j].box))
+                                entity_collide(&entity_system.entity_list[i]);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 void entity_free(Entity *self)
 {

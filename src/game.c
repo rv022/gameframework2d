@@ -6,6 +6,7 @@
 
 #include "camera.h"
 #include "entity.h"
+#include "enemy.h"
 #include "player.h"
 #include "world.h"
 
@@ -20,6 +21,8 @@ int main(int argc, char * argv[])
     float mf = 0;
     Sprite *mouse;
     Entity *player;
+    Entity *enemy;
+
     GFC_Color mouseGFC_Color = gfc_color8(0,128,255,200);
     
     /*program initializtion*/
@@ -43,6 +46,7 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
     player = player_new_entity();
+    enemy = enemy_new();
     world = world_load("maps/testworld.map");
     world_setup_camera(world);
     /*main game loop*/
@@ -57,6 +61,7 @@ int main(int argc, char * argv[])
         
         entity_system_think();
         entity_system_update();
+        entity_system_collision();
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
@@ -82,6 +87,7 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_free(player);
+    entity_free(enemy);
     world_free(world);
     slog("---==== END ====---");
     return 0;
