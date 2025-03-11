@@ -4,17 +4,22 @@
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 
+#include "entity.h"
+#include "player.h"
+#include "world.h"
+
 int main(int argc, char * argv[])
 {
     /*variable declarations*/
     int done = 0;
     const Uint8 * keys;
-    Sprite *sprite;
+    World *world;
     
     int mx,my;
     float mf = 0;
     Sprite *mouse;
-    GFC_Color mouseGFC_Color = gfc_color8(255,100,255,200);
+    Entity *player;
+    GFC_Color mouseGFC_Color = gfc_color8(0,128,255,200);
     
     /*program initializtion*/
     init_logger("gf2d.log",0);
@@ -29,12 +34,14 @@ int main(int argc, char * argv[])
         0);
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
+    entity_system_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     
     /*demo setup*/
-    sprite = gf2d_sprite_load_image("images/backgrounds/bg_flat.png");
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
+    player = player_new_entity();
+    world = world_test_new();
     /*main game loop*/
     while(!done)
     {
@@ -45,11 +52,16 @@ int main(int argc, char * argv[])
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         
+        entity_system_think();
+        entity_system_update();
+
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
             //backgrounds drawn first
-            gf2d_sprite_draw_image(sprite,gfc_vector2d(0,0));
+            world_draw(world);
             
+            entity_system_draw();
+
             //UI elements last
             gf2d_sprite_draw(
                 mouse,
@@ -66,6 +78,8 @@ int main(int argc, char * argv[])
         if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
+    entity_free(player);
+    world_free(world);
     slog("---==== END ====---");
     return 0;
 }
