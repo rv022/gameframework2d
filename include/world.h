@@ -17,6 +17,8 @@ World *world_load(const char *filename);
 
 World *world_test_new();
 
+void world_setup_camera(World *world);
+
 World *world_new();
 
 void world_free(World *world);

@@ -1,5 +1,6 @@
 #include "simple_logger.h"
 
+#include "camera.h"
 #include "player.h"
 
 void player_think(Entity *self);
@@ -64,6 +65,8 @@ void player_update(Entity *self)
     //46 to 65 is run
     //0 to 15 is idle
     gfc_vector2d_add(self->position, self->position, self->velocity);
+
+    camera_center_on(self->position);
 }
 
 void player_free(Entity *self)

@@ -4,6 +4,7 @@
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 
+#include "camera.h"
 #include "entity.h"
 #include "player.h"
 #include "world.h"
@@ -36,12 +37,14 @@ int main(int argc, char * argv[])
     gf2d_sprite_init(1024);
     entity_system_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
+    camera_set_size(gfc_vector2d(1200,720));
     
     /*demo setup*/
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
     player = player_new_entity();
     world = world_load("maps/testworld.map");
+    world_setup_camera(world);
     /*main game loop*/
     while(!done)
     {

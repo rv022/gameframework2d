@@ -3,6 +3,7 @@
 
 #include "gf2d_graphics.h"
 
+#include "camera.h"
 #include "world.h"
 
 void world_tile_layer_build(World *world)
@@ -217,9 +218,24 @@ void world_free(World *world)
 
 void world_draw(World *world)
 {
+    GFC_Vector2D offset;
     if(!world)return;
+    offset = camera_get_offset();
     gf2d_sprite_draw_image(world->background,gfc_vector2d(0,0));
-    gf2d_sprite_draw_image(world->tileLayer,gfc_vector2d(0,0));
+    gf2d_sprite_draw_image(world->tileLayer,offset);
+}
+
+void world_setup_camera(World *world)
+{
+    if(!world)return;
+    if((!world->tileLayer)||(!world->tileLayer->surface))
+    {
+        slog("no tile layer set for world");
+        return;
+    }
+    camera_set_bounds(gfc_rect(0,0,world->tileLayer->surface->w,world->tileLayer->surface->h));
+    camera_apply_bounds();
+    camera_enable_binding(1);
 }
 
 /*eof@eof*/
