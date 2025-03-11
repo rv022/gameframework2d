@@ -13,6 +13,8 @@ typedef struct
     Uint32 tileWidth;
 }World;
 
+World *world_load(const char *filename);
+
 World *world_test_new();
 
 World *world_new();

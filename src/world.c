@@ -1,4 +1,5 @@
 #include "simple_logger.h"
+#include "simple_json.h"
 
 #include "gf2d_graphics.h"
 
@@ -59,6 +60,94 @@ void world_tile_layer_build(World *world)
         slog("failed to convert world tile layer to texture");
         return;
     }
+}
+
+World *world_load(const char *filename)
+{
+    World *world = NULL;
+    SJson *json = NULL;
+    SJson *wjson = NULL;
+    SJson *vertical, *horizontal;
+    SJson *item;
+    int tile;
+    int w = 0, h = 0;
+    int i,j;
+    const char *tileSet;
+    const char *background;
+    int frame_w,frame_h;
+    int frames_per_line;
+
+    if(!filename)
+    {
+        slog("no filename provided for world_load");
+        return NULL;
+    }
+
+    json = sj_load(filename);
+    if(!json)
+    {
+        slog("failed to load world file %s", filename);
+        return NULL;
+    }
+    wjson = sj_object_get_value(json,"world");
+    if(!wjson)
+    {
+        slog("%s missing 'world' object", filename);
+        sj_free(json);
+        return NULL;
+    }
+
+    vertical = sj_object_get_value(wjson,"tileMap");
+    if(!vertical)
+    {
+        slog("%s missing 'tileMap'", filename);
+        sj_free(json);
+        return NULL;
+    }
+    h = sj_array_get_count(vertical);
+    horizontal = sj_array_get_nth(vertical,0);
+    w = sj_array_get_count(horizontal);
+    world = world_new(w,h);
+    if(!world)
+    {
+        slog("failed to create space for a new world for file %s", filename);
+        sj_free(json);
+        return NULL;
+    }
+
+    for(j=0; j < h; j++)
+    {
+        horizontal = sj_array_get_nth(vertical,j);
+        if(!horizontal)continue;
+        for(i=0; i < w; i++)
+        {
+            item = sj_array_get_nth(horizontal,i);
+            if(!item)continue;
+            tile = 0;
+            sj_get_integer_value(item,&tile);
+            world->tileMap[i+(j*w)] = tile;
+        }
+    }
+
+    background = sj_object_get_value_as_string(wjson, "background");
+    world->background = gf2d_sprite_load_image(background);
+
+    tileSet = sj_object_get_value_as_string(wjson, "tileSet");
+    sj_object_get_value_as_int(wjson,"frame_w",&frame_w);
+    sj_object_get_value_as_int(wjson,"frame_h",&frame_h);
+    sj_object_get_value_as_int(wjson,"frames_per_line",&frames_per_line);
+
+    world->tileSet = gf2d_sprite_load_all(
+        tileSet,
+        frame_w,
+        frame_h,
+        frames_per_line,
+        1);
+    world_tile_layer_build(world);
+
+    sj_free(json);
+
+    return world;
 }
 
 World *world_test_new()

@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
     player = player_new_entity();
-    world = world_test_new();
+    world = world_load("maps/testworld.map");
     /*main game loop*/
     while(!done)
     {
