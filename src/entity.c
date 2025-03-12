@@ -247,6 +247,12 @@ void entity_system_draw()
     }
 }
 
+void entity_rhythm(Entity *self)
+{
+    if(!self)return;
+    if(self->rhythm)self->rhythm(self);
+}
+
 
 
 /*eol@eof*/

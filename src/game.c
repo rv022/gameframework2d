@@ -18,10 +18,12 @@ int main(int argc, char * argv[])
     const Uint8 * keys;
     World *world;
     int i = 0;
+    int l = 35;
 
     int mx,my;
     float mf = 0;
     Sprite *mouse;
+    Sprite *rhythmNote;
     Entity *player;
     Entity *platform;
     //Entity *enemy;
@@ -47,6 +49,9 @@ int main(int argc, char * argv[])
     
     /*demo setup*/
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
+    rhythmNote = gf2d_sprite_load_image("images/quarterNote.png");
+
+
     slog("press [escape] to quit");
     player = player_new_entity();
     platform = platform_new();
@@ -59,15 +64,16 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         i+=1;
+        l-=1;
         slog("%d",i);
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         
-        if((i%300)==0)
+        if((i%400)==0)
         {
-            rhythm(platform);
+            entity_rhythm(platform);
         }
         entity_system_think();
         entity_system_update();
@@ -91,6 +97,16 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseGFC_Color,
                 (int)mf);
+
+            if((i%100)==0)
+            {
+                l=35;
+                gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
+            }
+            if(l>0)
+                gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
+
+
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         

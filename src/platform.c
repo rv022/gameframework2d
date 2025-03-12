@@ -18,7 +18,7 @@ Entity *platform_new()
         return NULL;
     }
     self->sprite = gf2d_sprite_load_all(
-        "images/platform.png",
+        "images/platform5.png",
         128,
         128,
         16,
