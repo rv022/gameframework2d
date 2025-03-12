@@ -19,6 +19,8 @@ typedef struct Entity_S //forward declaring struct while defining it
     int directionLeft; //0 is not moving, 1 if is
     int directionRight; //0 is not moving, 1 if is
     int jump; //0 is not moving, 1 if is
+    int verticalCollision; //0 if not, 1 if yes
+    int type; //0 entity 1 player **
     void (*think)(struct Entity_S *self);
     void (*update)(struct Entity_S *self);
     void (*free)(struct Entity_S *self);

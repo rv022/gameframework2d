@@ -79,6 +79,7 @@ void entity_collide(Entity *self)
 void entity_system_collision()
 {
     int i,j;
+    float t,p;
     if(entity_system.entity_list)
     {
         for(i = 0; i<entity_system.entity_max;i++)
@@ -92,7 +93,16 @@ void entity_system_collision()
                         if(i!=j)
                         {
                             if(gfc_rect_overlap(entity_system.entity_list[i].box,entity_system.entity_list[j].box))
+                            {
+                                t = entity_system.entity_list[i].position.y;
+                                p = entity_system.entity_list[j].position.y;
+
+                                if((p>(t+100)) && ((t+120)>p) && entity_system.entity_list[i].type==1)
+                                {
+                                    entity_system.entity_list[i].verticalCollision=1;
+                                }
                                 entity_collide(&entity_system.entity_list[i]);
+                            }
                         }
                     }
                 }

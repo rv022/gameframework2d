@@ -34,6 +34,8 @@ Entity *player_new_entity()
     self->free = player_free;
     self->directionLeft = 0;
     self->directionRight = 0;
+    self->verticalCollision = 0;
+    self->type=1;
 
     return self;
 }
@@ -125,8 +127,14 @@ void player_update(Entity *self)
 void player_collide(Entity *self)
 {
     if(!self)return;
-    slog("Player collision.");
-    gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(-1,-1)));
+    if(self->verticalCollision==1)
+    {
+        gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(1,-1)));
+        slog("vertical collision");
+        self->verticalCollision=0;
+    }
+    else
+        gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(-1,-1)));
 
 }
 
