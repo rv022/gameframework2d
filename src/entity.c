@@ -79,7 +79,7 @@ void entity_collide(Entity *self)
 void entity_system_collision()
 {
     int i,j;
-    float t,p;
+    float t,p,l,r;
     if(entity_system.entity_list)
     {
         for(i = 0; i<entity_system.entity_max;i++)
@@ -96,10 +96,73 @@ void entity_system_collision()
                             {
                                 t = entity_system.entity_list[i].position.y;
                                 p = entity_system.entity_list[j].position.y;
+                                l = entity_system.entity_list[i].position.x;
+                                r = entity_system.entity_list[j].position.x;
 
-                                if((p>(t+100)) && ((t+120)>p) && entity_system.entity_list[i].type==1)
+
+                                if(entity_system.entity_list[i].type==1)
                                 {
-                                    entity_system.entity_list[i].verticalCollision=1;
+                                    if((p>(t+100)) && ((t+120)>p) && entity_system.entity_list[i].type==1)
+                                    {
+                                        entity_system.entity_list[i].verticalCollision=1;
+                                        if(entity_system.entity_list[j].moving==1)
+                                        {
+                                            if(t<p)
+                                            {
+                                                gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                                entity_system.entity_list[i].moving=1;
+                                                slog("made it here");
+                                            }
+                                            else
+                                            {
+                                                gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                            }
+                                        }
+                                        if(entity_system.entity_list[j].moving==2)
+                                        {
+                                            if(t>p)
+                                            {
+                                                gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                                entity_system.entity_list[i].moving=2;
+                                                slog("made it here");
+                                            }
+                                            else
+                                            {
+                                                gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                               // entity_system.entity_list[i].moving=1;
+                                            }
+                                        }
+                                    }
+
+                                    if(entity_system.entity_list[j].moving==3)
+                                    {
+                                        if(l>r)
+                                        {
+                                            gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                            entity_system.entity_list[i].moving=4;
+                                        }
+                                        else
+                                        {
+                                            gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                            entity_system.entity_list[i].moving=3;
+                                        }
+
+                                    }
+                                    if(entity_system.entity_list[j].moving==4)
+                                    {
+                                        if(l>r)
+                                        {
+                                            gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                            entity_system.entity_list[i].moving=3;
+                                        }
+                                        else
+                                        {
+                                            gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
+                                            entity_system.entity_list[i].moving=4;
+                                        }
+
+                                    }
+
                                 }
                                 entity_collide(&entity_system.entity_list[i]);
                             }

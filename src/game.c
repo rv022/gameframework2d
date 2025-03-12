@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "entity.h"
 #include "enemy.h"
+#include "platform.h"
 #include "player.h"
 #include "world.h"
 
@@ -16,12 +17,14 @@ int main(int argc, char * argv[])
     int done = 0;
     const Uint8 * keys;
     World *world;
-    
+    int i = 0;
+
     int mx,my;
     float mf = 0;
     Sprite *mouse;
     Entity *player;
-    Entity *enemy;
+    Entity *platform;
+    //Entity *enemy;
 
     GFC_Color mouseGFC_Color = gfc_color8(0,128,255,200);
     
@@ -46,22 +49,30 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     slog("press [escape] to quit");
     player = player_new_entity();
-    enemy = enemy_new();
+    platform = platform_new();
     world = world_load("maps/testworld.map");
     world_setup_camera(world);
+
     /*main game loop*/
     while(!done)
     {
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
+        i+=1;
+        slog("%d",i);
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
         
+        if((i%300)==0)
+        {
+            rhythm(platform);
+        }
         entity_system_think();
         entity_system_update();
         entity_system_collision();
+
 
         gf2d_graphics_clear_screen();// clears drawing buffers
         // all drawing should happen betweem clear_screen and next_frame
@@ -87,7 +98,7 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_free(player);
-    entity_free(enemy);
+    entity_free(platform);
     world_free(world);
     slog("---==== END ====---");
     return 0;

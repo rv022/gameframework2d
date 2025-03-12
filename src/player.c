@@ -26,7 +26,7 @@ Entity *player_new_entity()
         16,
         0);
     self->frame = 0;
-    self->position = gfc_vector2d(0,0);
+    self->position = gfc_vector2d(0,835);
     self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
     self->think = player_think;
     self->update = player_update;
@@ -129,9 +129,33 @@ void player_collide(Entity *self)
     if(!self)return;
     if(self->verticalCollision==1)
     {
+        if(self->moving==1)
+        {
+            gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(-1,-2)));
+            self->verticalCollision=0;
+        }
+        else
+        {
+            gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(1,-1)));
+            slog("vertical collision");
+            self->verticalCollision=0;
+        }
+    }
+    if(self->moving==1)
+    {
+        gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(1,-2)));
+    }
+    if(self->moving==2)
+    {
+        gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(1,1)));
+    }
+    else if(self->moving==3)
+    {
         gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(1,-1)));
-        slog("vertical collision");
-        self->verticalCollision=0;
+    }
+    else if(self->moving==4)
+    {
+        gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(-1,-1)));
     }
     else
         gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(-1,-1)));
@@ -141,7 +165,7 @@ void player_collide(Entity *self)
 void player_gravity(Entity *self)
 {
     self->velocity.y += 2;
-    if (self->position.y >= 510)self->position.y = 510;
+    if (self->position.y >= 835)self->position.y = 835;
 }
 void player_free(Entity *self)
 {

@@ -20,11 +20,13 @@ typedef struct Entity_S //forward declaring struct while defining it
     int directionRight; //0 is not moving, 1 if is
     int jump; //0 is not moving, 1 if is
     int verticalCollision; //0 if not, 1 if yes
-    int type; //0 entity 1 player **
+    int type; //1 = player, 2 = enemy, 3 = platform
+    int moving; //0 if still, 1 if up, 2 down,3 left, 4 right
     void (*think)(struct Entity_S *self);
     void (*update)(struct Entity_S *self);
     void (*free)(struct Entity_S *self);
     void(*collide)(struct Entity_S *self);
+    void (*rhythm)(struct Entity_S *self);
     void *data;
 }Entity;
 
@@ -50,6 +52,8 @@ void entity_free(Entity *self);
 void entity_system_think();
 
 void entity_collide();
+
+void entity_rhythm(Entity *self);
 
 void entity_system_collision();
 
