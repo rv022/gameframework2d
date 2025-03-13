@@ -22,6 +22,10 @@ typedef struct Entity_S //forward declaring struct while defining it
     int verticalCollision; //0 if not, 1 if yes
     int type; //1 = player, 2 = enemy, 3 = platform
     int moving; //0 if still, 1 if up, 2 down,3 left, 4 right
+    GFC_Vector2D *rewindPosition;
+    int rewindNumber;
+    int rewind;
+    int rewinding;
     void (*think)(struct Entity_S *self);
     void (*update)(struct Entity_S *self);
     void (*free)(struct Entity_S *self);

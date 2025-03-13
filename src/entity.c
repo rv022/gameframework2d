@@ -111,7 +111,7 @@ void entity_system_collision()
                                             {
                                                 gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
                                                 entity_system.entity_list[i].moving=1;
-                                                slog("made it here");
+                                                //slog("made it here");
                                             }
                                             else
                                             {
@@ -124,7 +124,7 @@ void entity_system_collision()
                                             {
                                                 gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, entity_system.entity_list[j].velocity);
                                                 entity_system.entity_list[i].moving=2;
-                                                slog("made it here");
+                                                //slog("made it here");
                                             }
                                             else
                                             {

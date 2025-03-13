@@ -4,6 +4,8 @@
 #include "gf2d_graphics.h"
 #include "gf2d_sprite.h"
 
+#include "gfc_list.h"
+
 #include "camera.h"
 #include "entity.h"
 #include "enemy.h"
@@ -19,6 +21,8 @@ int main(int argc, char * argv[])
     World *world;
     int i = 0;
     int l = 35;
+    //int list = 0;
+    //int k = 0;
 
     int mx,my;
     float mf = 0;
@@ -26,6 +30,8 @@ int main(int argc, char * argv[])
     Sprite *rhythmNote;
     Entity *player;
     Entity *platform;
+    //GFC_List *rewind = gfc_list_new();
+    //void* rewindPosition;
     //Entity *enemy;
 
     GFC_Color mouseGFC_Color = gfc_color8(0,128,255,200);
@@ -65,15 +71,26 @@ int main(int argc, char * argv[])
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         i+=1;
         l-=1;
+        //list = gfc_list_get_count(rewind);
         slog("%d",i);
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
         if (mf >= 16.0)mf = 0;
+
+        //if (keys[SDL_SCANCODE_R])
+        //{
+            //for(int k = list; k>=0; k--)
+                //player->position = gfc_list_get_nth(rewind,k);
+        //}
         
         if((i%400)==0)
         {
             entity_rhythm(platform);
+        }
+        if((i%10)==0)
+        {
+            entity_rhythm(player);
         }
         entity_system_think();
         entity_system_update();
@@ -102,9 +119,12 @@ int main(int argc, char * argv[])
             {
                 l=35;
                 gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
+                //rewindPosition=player->position;
+                //gfc_list_append(rewind,rewindPosition);
             }
             if(l>0)
                 gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
+
 
 
 

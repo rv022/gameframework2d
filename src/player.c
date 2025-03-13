@@ -9,6 +9,7 @@ void player_free(Entity *self);
 void player_collide(Entity *self);
 void player_move(Entity *self);
 void player_jump(Entity *self);
+void player_rhythm(Entity *self);
 
 Entity *player_new_entity()
 {
@@ -32,12 +33,34 @@ Entity *player_new_entity()
     self->update = player_update;
     self->collide = player_collide;
     self->free = player_free;
+    self->rhythm = player_rhythm;
     self->directionLeft = 0;
     self->directionRight = 0;
     self->verticalCollision = 0;
     self->type=1;
+    self->rewindPosition = malloc(sizeof(float)*100000);
+    self->rewindNumber = 0;
+    self->rewind = 0;
+    self->rewinding = 0;
 
     return self;
+}
+
+void player_rhythm(Entity *self)
+{
+    if(!self)return;
+    self->rewindPosition[self->rewindNumber] = self->position;
+    self->rewindNumber++;
+}
+
+void player_rewind(Entity *self)
+{
+    if(!self)return;
+    if(self->rewind>0 && self->rewinding==1)
+    {
+        self->position = self->rewindPosition[self->rewind];
+        self->rewind--;
+    }
 }
 
 void player_think(Entity *self)
@@ -60,7 +83,12 @@ void player_think(Entity *self)
                     break;
                 case SDLK_j:
                     self->jump=12;
-                break;
+                    break;
+                case SDLK_r:
+                    if(self->rewind==0 && self->rewinding==0)
+                        self->rewind = self->rewindNumber;
+                    self->rewinding=1;
+                    break;
             }
         }
         else if(event.type==SDL_KEYUP)
@@ -74,6 +102,9 @@ void player_think(Entity *self)
                     self->directionRight=0;
                 break;
                 case SDLK_j:
+                    break;
+                case SDLK_r:
+                    self->rewinding=0;
                     break;
             }
         }
@@ -99,7 +130,7 @@ void player_move(Entity *self)
 
 void player_jump(Entity *self)
 {
-    slog("player jumped");
+    //slog("player jumped");
     if(self->jump>0)
     {
         self->velocity.y -= 10;
@@ -118,8 +149,10 @@ void player_update(Entity *self)
     player_move(self);
     player_gravity(self);
     player_jump(self);
+    player_rewind(self);
     gfc_vector2d_add(self->position, self->position, self->velocity);
-    self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
+    if(self->rewinding==0)
+        self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
 
     camera_center_on(self->position);
 }
@@ -137,7 +170,7 @@ void player_collide(Entity *self)
         else
         {
             gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(1,-1)));
-            slog("vertical collision");
+            //slog("vertical collision");
             self->verticalCollision=0;
         }
     }

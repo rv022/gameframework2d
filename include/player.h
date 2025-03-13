@@ -15,5 +15,6 @@ Entity *player_new_entity();
 void player_gravity(Entity *self);
 void player_move(Entity *self);
 void player_jump(Entity *self);
+void player_rewind(Entity *self);
 
 #endif
