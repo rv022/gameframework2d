@@ -121,38 +121,45 @@ int main(int argc, char * argv[])
         }
         */
 
-        if((i%400)==0)
-        {
-            entity_rhythm(platform);
-            entity_rhythm(verticalPlatform);
-            entity_rhythm(launchPlatform);
-        }
-        if((i%200)==0)
-        {
-             entity_rhythm(winPlatform);
-             entity_rhythm(enemy);
-             entity_rhythm(strongudenemy);
-        }
-        if((i%100)==0)
-        {
-            entity_rhythm(teleportPlatform);
-            entity_rhythm(lrenemy);
-            entity_rhythm(udenemy);
-        }
-        if((i%50)==0)
-        {
-            entity_rhythm(teleportenemy);
 
-        }
-        if((i%10)==0)
+        if(player->rewinding==0)
         {
-            if(player->win==0)
+            if((i%400)==0)
             {
-                entity_rhythm(player);
-                entity_system_tape();
+                entity_rhythm(platform);
+                entity_rhythm(verticalPlatform);
+                entity_rhythm(launchPlatform);
+            }
+            if((i%200)==0)
+            {
+                entity_rhythm(winPlatform);
+                entity_rhythm(enemy);
+                entity_rhythm(strongudenemy);
+            }
+            if((i%100)==0)
+            {
+                entity_rhythm(teleportPlatform);
+                entity_rhythm(lrenemy);
+                entity_rhythm(udenemy);
+            }
+            if((i%50)==0)
+            {
+                entity_rhythm(teleportenemy);
+
             }
         }
+            if((i%10)==0)
+            {
+                if(player->win==0)
+                {
+                    entity_rhythm(player);
+                    entity_system_tape();
+                }
+            }
+
         entity_system_think();
+        if(player->win==2 && enemy->win!=2)
+            entity_system_win();
         entity_system_update();
         entity_system_collision();
 
@@ -184,7 +191,7 @@ int main(int argc, char * argv[])
             }
             if(l>0)
                 gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
-            if(player->win==1)
+            if(player->win==2)
                 gf2d_sprite_draw_image(cassette,gfc_vector2d(0,0));
 
 

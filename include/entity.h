@@ -37,6 +37,7 @@ typedef struct Entity_S //forward declaring struct while defining it
     void (*rhythm)(struct Entity_S *self);
     void (*rewind)(struct Entity_S *self);
     void (*tape)(struct Entity_S *self);
+    void (*play)(struct Entity_S *self);
     void *data;
 }Entity;
 
@@ -66,6 +67,10 @@ void entity_collide();
 void entity_system_rewind();
 
 void entity_system_stop_rewind();
+
+void entity_system_play();
+
+void entity_system_win();
 
 void entity_rhythm(Entity *self);
 

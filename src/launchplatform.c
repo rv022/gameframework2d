@@ -7,6 +7,9 @@ void launchplatform_update(Entity *self);
 void launchplatform_free(Entity *self);
 void launchplatform_collide(Entity *self);
 void launchplatform_rhythm(Entity *self);
+void launchplatform_rewind(Entity *self);
+void launchplatform_tape(Entity *self);
+void launchplatform_play(Entity *self);
 
 Entity *launchplatform_new()
 {
@@ -24,7 +27,7 @@ Entity *launchplatform_new()
         16,
         0);
     self->frame = 0;
-    self->position = gfc_vector2d(1350,780);
+    self->position = gfc_vector2d(1550,780);
     self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
     self->think = launchplatform_think;
     self->update = launchplatform_update;
@@ -35,9 +38,48 @@ Entity *launchplatform_new()
     self->velocity = gfc_vector2d(1,0);
     self->moving = 4;
     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
+    self->play = launchplatform_play;
+    self->rewind = launchplatform_rewind;
+    self->tape = launchplatform_tape;
+    self->rewindPosition = malloc(sizeof(float)*100000);
+    self->rewindNumber = 0;
+    self->currentRewind = 0;
+    self->rewinding = 0;
+    self->win = 0;
+    self->winCool = 0;
 
 
     return self;
+}
+
+void launchplatform_tape(Entity *self)
+{
+    self->rewindPosition[self->rewindNumber] = self->position;
+    self->rewindNumber++;
+}
+
+void launchplatform_play(Entity *self)
+{
+    if(!self)return;
+    if(self->win==2 && self->rewinding==1 && self->winCool>1)
+    {
+        if(self->currentRewind<self->rewindNumber && self->rewinding==1)
+        {
+            self->position = self->rewindPosition[self->currentRewind];
+            self->currentRewind++;
+            self->winCool=0;
+        }
+    }
+}
+
+void launchplatform_rewind(Entity *self)
+{
+    if(!self)return;
+    if(self->currentRewind>0 && self->rewinding==1 && self->win==0)
+    {
+        self->position = self->rewindPosition[self->currentRewind];
+        self->currentRewind--;
+    }
 }
 
 void launchplatform_think(Entity *self)
@@ -78,11 +120,12 @@ void launchplatform_update(Entity *self)
 {
     if(!self)return;
     //self->frame += 0.1;
-    if (self->frame >= 15)self->frame = 0;
-    //46 to 65 is run
-    //0 to 15 is idle
+    self->winCool++;
+    launchplatform_rewind(self);
+    if(self->rewinding==0)
+    {
     self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
-
+    }
 }
 
 void launchplatform_collide(Entity *self)

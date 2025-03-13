@@ -64,7 +64,7 @@ void player_rewind(Entity *self)
         self->position = self->rewindPosition[self->currentRewind];
         self->currentRewind--;
     }
-    if(self->win==1 && self->rewinding==1 && self->winCool>1)
+    if(self->win==2 && self->rewinding==1 && self->winCool>1)
     {
         if(self->currentRewind<self->rewindNumber && self->rewinding==1)
         {
@@ -109,14 +109,14 @@ void player_think(Entity *self)
                     }
                     break;
                 case SDLK_p:
-                    if(self->win==1 && self->rewinding==0)
+                    if(self->win==2 && self->rewinding==0)
                     {
                         self->currentRewind= 1;
                         self->winCool = 1;
                     }
                     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                     self->rewinding=1;
-                    entity_system_rewind();
+                    entity_system_play();
                 break;
             }
         }
@@ -138,6 +138,7 @@ void player_think(Entity *self)
                     break;
                 case SDLK_p:
                     self->rewinding=0;
+                    entity_system_stop_rewind();
                     break;
             }
         }
@@ -190,6 +191,7 @@ void player_update(Entity *self)
 
     if (self->position.x >= 2900)self->position.x = 2900;
     if (self->position.x <= -20)self->position.x = -20;
+    if (self->position.y <= 0)self->position.y = 0;
     camera_center_on(self->position);
 }
 
