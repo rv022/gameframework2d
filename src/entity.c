@@ -80,6 +80,7 @@ void entity_system_collision()
 {
     int i,j;
     float t,p,l,r;
+    int safe;
     if(entity_system.entity_list)
     {
         for(i = 0; i<entity_system.entity_max;i++)
@@ -88,6 +89,7 @@ void entity_system_collision()
             {
                 for(j = 0; j<entity_system.entity_max;j++)
                 {
+                    safe=0;
                     if(entity_system.entity_list[j]._inuse)
                     {
                         if(i!=j)
@@ -105,6 +107,13 @@ void entity_system_collision()
                                     if((p>(t+100)) && ((t+120)>p) && entity_system.entity_list[i].type==1)
                                     {
                                         entity_system.entity_list[i].verticalCollision=1;
+                                        if(entity_system.entity_list[j].type==2)
+                                        {
+                                            entity_system.entity_list[j].health-=1;
+                                            safe=1;
+                                            if(entity_system.entity_list[j].verticalCollision==1)
+                                                safe=0;
+                                        }
                                         if(entity_system.entity_list[j].moving==1)
                                         {
                                             if(t<p)
@@ -133,6 +142,9 @@ void entity_system_collision()
                                             }
                                         }
                                     }
+
+                                    if(entity_system.entity_list[j].type==2 && safe==0)
+                                        entity_system.entity_list[i].position=gfc_vector2d(0,835);
 
                                     if(entity_system.entity_list[j].moving==3)
                                     {

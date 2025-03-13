@@ -9,6 +9,10 @@
 #include "camera.h"
 #include "entity.h"
 #include "enemy.h"
+#include "strongudenemy.h"
+#include "udenemy.h"
+#include "lrenemy.h"
+#include "teleportenemy.h"
 #include "platform.h"
 #include "verticalplatform.h"
 #include "teleportplatform.h"
@@ -34,6 +38,11 @@ int main(int argc, char * argv[])
     Sprite *rhythmNote;
     Sprite *cassette;
     Entity *player;
+    Entity *enemy;
+    Entity *strongudenemy;
+    Entity *udenemy;
+    Entity *lrenemy;
+    Entity *teleportenemy;
     Entity *platform;
     Entity *verticalPlatform;
     Entity *teleportPlatform;
@@ -67,6 +76,13 @@ int main(int argc, char * argv[])
 
     slog("press [escape] to quit");
     player = player_new_entity();
+
+    enemy = enemy_new();
+    strongudenemy = strongudenemy_new();
+    udenemy = udenemy_new();
+    lrenemy = lrenemy_new();
+    teleportenemy = teleportenemy_new();
+
     platform = platform_new();
     verticalPlatform = verticalplatform_new();
     teleportPlatform = teleportplatform_new();
@@ -83,7 +99,7 @@ int main(int argc, char * argv[])
         i+=1;
         l-=1;
         //list = gfc_list_get_count(rewind);
-        slog("%d",i);
+        //slog("%d",i);
         /*update things here*/
         SDL_GetMouseState(&mx,&my);
         mf+=0.1;
@@ -103,11 +119,20 @@ int main(int argc, char * argv[])
         }
         if((i%200)==0)
         {
-            entity_rhythm(winPlatform);
+             entity_rhythm(winPlatform);
+             entity_rhythm(enemy);
+             entity_rhythm(strongudenemy);
         }
         if((i%100)==0)
         {
             entity_rhythm(teleportPlatform);
+            entity_rhythm(lrenemy);
+            entity_rhythm(udenemy);
+        }
+        if((i%50)==0)
+        {
+            entity_rhythm(teleportenemy);
+
         }
         if((i%10)==0)
         {
@@ -158,6 +183,11 @@ int main(int argc, char * argv[])
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_free(player);
+    entity_free(enemy);
+    entity_free(strongudenemy);
+    entity_free(udenemy);
+    entity_free(lrenemy);
+    entity_free(teleportenemy);
     entity_free(platform);
     entity_free(verticalPlatform);
     entity_free(winPlatform);

@@ -185,6 +185,8 @@ void player_update(Entity *self)
     if(self->rewinding==0)
         self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
 
+    if (self->position.x >= 2900)self->position.x = 2900;
+    if (self->position.x <= -20)self->position.x = -20;
     camera_center_on(self->position);
 }
 

@@ -24,7 +24,7 @@ Entity *platform_new()
         16,
         0);
     self->frame = 0;
-    self->position = gfc_vector2d(520,750);
+    self->position = gfc_vector2d(520,700);
     self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
     self->think = platform_think;
     self->update = platform_update;
