@@ -31,6 +31,7 @@ Entity *enemy_new()
     self->type = 0;
     self->velocity = gfc_vector2d(1,0);
     self->moving = 2;
+    self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
 
     return self;
 }

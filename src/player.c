@@ -42,6 +42,7 @@ Entity *player_new_entity()
     self->rewindNumber = 0;
     self->rewind = 0;
     self->rewinding = 0;
+    self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
 
     return self;
 }
@@ -77,9 +78,11 @@ void player_think(Entity *self)
             {
                 case SDLK_a:
                     self->directionLeft=1;
+                    self->flip = gfc_vector2d_dup(gfc_vector2d(1,0));
                     break;
                 case SDLK_d:
                     self->directionRight=1;
+                    self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                     break;
                 case SDLK_j:
                     self->jump=12;
@@ -87,6 +90,7 @@ void player_think(Entity *self)
                 case SDLK_r:
                     if(self->rewind==0 && self->rewinding==0)
                         self->rewind = self->rewindNumber;
+                    self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                     self->rewinding=1;
                     break;
             }

@@ -232,7 +232,7 @@ void entity_draw(Entity *self)
                      NULL,
                      NULL,
                      NULL,
-                     NULL,
+                     self->flip,
                      NULL,
                      (Uint32)self->frame
     );

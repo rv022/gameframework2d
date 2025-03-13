@@ -26,6 +26,7 @@ typedef struct Entity_S //forward declaring struct while defining it
     int rewindNumber;
     int rewind;
     int rewinding;
+    GFC_Vector2D *flip;
     void (*think)(struct Entity_S *self);
     void (*update)(struct Entity_S *self);
     void (*free)(struct Entity_S *self);
