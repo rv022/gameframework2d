@@ -162,6 +162,12 @@ void entity_system_collision()
                                         }
 
                                     }
+                                    if(entity_system.entity_list[j].moving==5)
+                                    {
+                                        gfc_vector2d_add(entity_system.entity_list[i].velocity,entity_system.entity_list[i].velocity, gfc_vector2d(0,300));
+                                    }
+                                    if(entity_system.entity_list[j].win==1)
+                                        entity_system.entity_list[i].win=1;
 
                                 }
                                 entity_collide(&entity_system.entity_list[i]);

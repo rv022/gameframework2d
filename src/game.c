@@ -10,6 +10,10 @@
 #include "entity.h"
 #include "enemy.h"
 #include "platform.h"
+#include "verticalplatform.h"
+#include "teleportplatform.h"
+#include "launchplatform.h"
+#include "winplatform.h"
 #include "player.h"
 #include "world.h"
 
@@ -28,11 +32,13 @@ int main(int argc, char * argv[])
     float mf = 0;
     Sprite *mouse;
     Sprite *rhythmNote;
+    Sprite *cassette;
     Entity *player;
     Entity *platform;
-    //GFC_List *rewind = gfc_list_new();
-    //void* rewindPosition;
-    //Entity *enemy;
+    Entity *verticalPlatform;
+    Entity *teleportPlatform;
+    Entity *launchPlatform;
+    Entity *winPlatform;
 
     GFC_Color mouseGFC_Color = gfc_color8(0,128,255,200);
     
@@ -56,11 +62,16 @@ int main(int argc, char * argv[])
     /*demo setup*/
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     rhythmNote = gf2d_sprite_load_image("images/quarterNote.png");
+    cassette = gf2d_sprite_load_image("images/cassette.png");
 
 
     slog("press [escape] to quit");
     player = player_new_entity();
     platform = platform_new();
+    verticalPlatform = verticalplatform_new();
+    teleportPlatform = teleportplatform_new();
+    launchPlatform = launchplatform_new();
+    winPlatform = winplatform_new();
     world = world_load("maps/testworld.map");
     world_setup_camera(world);
 
@@ -87,10 +98,21 @@ int main(int argc, char * argv[])
         if((i%400)==0)
         {
             entity_rhythm(platform);
+            entity_rhythm(verticalPlatform);
+            entity_rhythm(launchPlatform);
+        }
+        if((i%200)==0)
+        {
+            entity_rhythm(winPlatform);
+        }
+        if((i%100)==0)
+        {
+            entity_rhythm(teleportPlatform);
         }
         if((i%10)==0)
         {
-            entity_rhythm(player);
+            if(player->win==0)
+                entity_rhythm(player);
         }
         entity_system_think();
         entity_system_update();
@@ -124,6 +146,8 @@ int main(int argc, char * argv[])
             }
             if(l>0)
                 gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
+            if(player->win==1)
+                gf2d_sprite_draw_image(cassette,gfc_vector2d(0,0));
 
 
 
@@ -135,6 +159,10 @@ int main(int argc, char * argv[])
     }
     entity_free(player);
     entity_free(platform);
+    entity_free(verticalPlatform);
+    entity_free(winPlatform);
+    entity_free(teleportPlatform);
+    entity_free(launchPlatform);
     world_free(world);
     slog("---==== END ====---");
     return 0;

@@ -43,6 +43,8 @@ Entity *player_new_entity()
     self->rewind = 0;
     self->rewinding = 0;
     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
+    self->win = 0;
+    self->winCool = 0;
 
     return self;
 }
@@ -57,10 +59,19 @@ void player_rhythm(Entity *self)
 void player_rewind(Entity *self)
 {
     if(!self)return;
-    if(self->rewind>0 && self->rewinding==1)
+    if(self->rewind>0 && self->rewinding==1 && self->win==0)
     {
         self->position = self->rewindPosition[self->rewind];
         self->rewind--;
+    }
+    if(self->win==1 && self->rewinding==1 && self->winCool>1)
+    {
+        if(self->rewind<self->rewindNumber && self->rewinding==1)
+        {
+            self->position = self->rewindPosition[self->rewind];
+            self->rewind++;
+            self->winCool=0;
+        }
     }
 }
 
@@ -88,11 +99,23 @@ void player_think(Entity *self)
                     self->jump=12;
                     break;
                 case SDLK_r:
-                    if(self->rewind==0 && self->rewinding==0)
-                        self->rewind = self->rewindNumber;
+                    if(self->win==0)
+                    {
+                        if(self->rewind==0 && self->rewinding==0)
+                            self->rewind = self->rewindNumber;
+                        self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
+                        self->rewinding=1;
+                    }
+                    break;
+                case SDLK_p:
+                    if(self->win==1 && self->rewinding==0)
+                    {
+                        self->rewind = 1;
+                        self->winCool = 1;
+                    }
                     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                     self->rewinding=1;
-                    break;
+                break;
             }
         }
         else if(event.type==SDL_KEYUP)
@@ -108,6 +131,9 @@ void player_think(Entity *self)
                 case SDLK_j:
                     break;
                 case SDLK_r:
+                    self->rewinding=0;
+                    break;
+                case SDLK_p:
                     self->rewinding=0;
                     break;
             }
@@ -137,7 +163,7 @@ void player_jump(Entity *self)
     //slog("player jumped");
     if(self->jump>0)
     {
-        self->velocity.y -= 10;
+        self->velocity.y -= 12;
         self->jump-=1;
     }
 }
@@ -147,6 +173,7 @@ void player_update(Entity *self)
 
     if(!self)return;
     self->frame += 0.1;
+    self->winCool++;
     if (self->frame >= 15)self->frame = 0;
     //46 to 65 is run
     //0 to 15 is idle
