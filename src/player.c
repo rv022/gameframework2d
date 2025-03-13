@@ -38,11 +38,11 @@ Entity *player_new_entity()
     self->directionRight = 0;
     self->verticalCollision = 0;
     self->type=1;
+    self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
     self->rewindPosition = malloc(sizeof(float)*100000);
     self->rewindNumber = 0;
-    self->rewind = 0;
+    self->currentRewind= 0;
     self->rewinding = 0;
-    self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
     self->win = 0;
     self->winCool = 0;
 
@@ -59,17 +59,17 @@ void player_rhythm(Entity *self)
 void player_rewind(Entity *self)
 {
     if(!self)return;
-    if(self->rewind>0 && self->rewinding==1 && self->win==0)
+    if(self->currentRewind>0 && self->rewinding==1 && self->win==0)
     {
-        self->position = self->rewindPosition[self->rewind];
-        self->rewind--;
+        self->position = self->rewindPosition[self->currentRewind];
+        self->currentRewind--;
     }
     if(self->win==1 && self->rewinding==1 && self->winCool>1)
     {
-        if(self->rewind<self->rewindNumber && self->rewinding==1)
+        if(self->currentRewind<self->rewindNumber && self->rewinding==1)
         {
-            self->position = self->rewindPosition[self->rewind];
-            self->rewind++;
+            self->position = self->rewindPosition[self->currentRewind];
+            self->currentRewind++;
             self->winCool=0;
         }
     }
@@ -101,20 +101,22 @@ void player_think(Entity *self)
                 case SDLK_r:
                     if(self->win==0)
                     {
-                        if(self->rewind==0 && self->rewinding==0)
-                            self->rewind = self->rewindNumber;
+                        if(self->currentRewind==0 && self->rewinding==0)
+                            self->currentRewind= self->rewindNumber;
                         self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                         self->rewinding=1;
+                        entity_system_rewind();
                     }
                     break;
                 case SDLK_p:
                     if(self->win==1 && self->rewinding==0)
                     {
-                        self->rewind = 1;
+                        self->currentRewind= 1;
                         self->winCool = 1;
                     }
                     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                     self->rewinding=1;
+                    entity_system_rewind();
                 break;
             }
         }
@@ -132,6 +134,7 @@ void player_think(Entity *self)
                     break;
                 case SDLK_r:
                     self->rewinding=0;
+                    entity_system_stop_rewind();
                     break;
                 case SDLK_p:
                     self->rewinding=0;

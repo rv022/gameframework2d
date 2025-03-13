@@ -7,6 +7,8 @@ void strongudenemy_update(Entity *self);
 void strongudenemy_free(Entity *self);
 void strongudenemy_collide(Entity *self);
 void strongudenemy_rhythm(Entity *self);
+void strongudenemy_rewind(Entity *self);
+void strongudenemy_tape(Entity *self);
 
 Entity *strongudenemy_new()
 {
@@ -35,10 +37,44 @@ Entity *strongudenemy_new()
     self->velocity = gfc_vector2d(0,-1);
     self->moving = 1;
     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
-    self->health = 50;
+    self->health = 10;
+
+    self->rewind = strongudenemy_rewind;
+    self->tape = strongudenemy_tape;
+    self->rewindPosition = malloc(sizeof(float)*100000);
+    self->rewindNumber = 0;
+    self->currentRewind = 0;
+    self->rewinding = 0;
+    self->win = 0;
+    self->winCool = 0;
 
 
     return self;
+}
+
+void strongudenemy_tape(Entity *self)
+{
+    self->rewindPosition[self->rewindNumber] = self->position;
+    self->rewindNumber++;
+}
+
+void strongudenemy_rewind(Entity *self)
+{
+    if(!self)return;
+    if(self->currentRewind>0 && self->rewinding==1 && self->win==0)
+    {
+        self->position = self->rewindPosition[self->currentRewind];
+        self->currentRewind--;
+    }
+    if(self->win==2 && self->rewinding==1 && self->winCool>1)
+    {
+        if(self->currentRewind<self->rewindNumber && self->rewinding==1)
+        {
+            self->position = self->rewindPosition[self->currentRewind];
+            self->currentRewind++;
+            self->winCool=0;
+        }
+    }
 }
 
 void strongudenemy_think(Entity *self)
@@ -65,12 +101,12 @@ void strongudenemy_rhythm(Entity *self)
         self->flip = gfc_vector2d_dup(gfc_vector2d(1,0));
         self->velocity = gfc_vector2d(0,-1);
     }
-    if(self->verticalCollision==0&&self->health!=50)
+    if(self->verticalCollision==0&&self->health!=10)
     {
         self->frame = 35;
         self->verticalCollision=1;
     }
-    else if(self->verticalCollision==1&&self->health!=50)
+    else if(self->verticalCollision==1&&self->health!=10)
     {
         self->verticalCollision=0;
         self->frame = 1;
@@ -84,6 +120,8 @@ void strongudenemy_update(Entity *self)
     //if (self->frame >= 15)self->frame = 0;
     //46 to 65 is run
     //0 to 15 is idle
+    self->winCool++;
+    strongudenemy_rewind(self);
     gfc_vector2d_add(self->position, self->position, self->velocity);
     self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
 
@@ -92,6 +130,7 @@ void strongudenemy_update(Entity *self)
 void strongudenemy_collide(Entity *self)
 {
     if(!self)return;
+    slog("%d", self->health);
     if(self->health<1)
     {
         self->velocity.y=25;

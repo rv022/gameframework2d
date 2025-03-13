@@ -24,7 +24,7 @@ typedef struct Entity_S //forward declaring struct while defining it
     int moving; //0 if still, 1 if up, 2 down,3 left, 4 right
     GFC_Vector2D *rewindPosition;
     int rewindNumber;
-    int rewind;
+    int currentRewind;
     int rewinding;
     int win;
     int winCool;
@@ -35,6 +35,8 @@ typedef struct Entity_S //forward declaring struct while defining it
     void (*free)(struct Entity_S *self);
     void(*collide)(struct Entity_S *self);
     void (*rhythm)(struct Entity_S *self);
+    void (*rewind)(struct Entity_S *self);
+    void (*tape)(struct Entity_S *self);
     void *data;
 }Entity;
 
@@ -61,13 +63,20 @@ void entity_system_think();
 
 void entity_collide();
 
+void entity_system_rewind();
+
+void entity_system_stop_rewind();
+
 void entity_rhythm(Entity *self);
+
 
 void entity_system_collision();
 
 void entity_system_update();
 
 void entity_system_draw();
+
+void entity_system_tape();
 
 void entity_draw(Entity *self);
 

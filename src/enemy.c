@@ -7,6 +7,8 @@ void enemy_update(Entity *self);
 void enemy_free(Entity *self);
 void enemy_collide(Entity *self);
 void enemy_rhythm(Entity *self);
+void enemy_rewind(Entity *self);
+void enemy_tape(Entity *self);
 
 Entity *enemy_new()
 {
@@ -37,8 +39,42 @@ Entity *enemy_new()
     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
     self->health = 50;
 
+    self->rewind = enemy_rewind;
+    self->tape = enemy_tape;
+    self->rewindPosition = malloc(sizeof(float)*100000);
+    self->rewindNumber = 0;
+    self->currentRewind = 0;
+    self->rewinding = 0;
+    self->win = 0;
+    self->winCool = 0;
+
 
     return self;
+}
+
+void enemy_tape(Entity *self)
+{
+    self->rewindPosition[self->rewindNumber] = self->position;
+    self->rewindNumber++;
+}
+
+void enemy_rewind(Entity *self)
+{
+    if(!self)return;
+    if(self->currentRewind>0 && self->rewinding==1 && self->win==0)
+    {
+        self->position = self->rewindPosition[self->currentRewind];
+        self->currentRewind--;
+    }
+    if(self->win==2 && self->rewinding==1 && self->winCool>1)
+    {
+        if(self->currentRewind<self->rewindNumber && self->rewinding==1)
+        {
+            self->position = self->rewindPosition[self->currentRewind];
+            self->currentRewind++;
+            self->winCool=0;
+        }
+    }
 }
 
 void enemy_think(Entity *self)
@@ -49,6 +85,8 @@ void enemy_think(Entity *self)
     //gfc_vector2d_scale(self->velocity,dir,3);
 
 }
+
+
 
 void enemy_rhythm(Entity *self)
 {
@@ -75,6 +113,7 @@ void enemy_rhythm(Entity *self)
         self->verticalCollision=0;
         self->frame = 0;
     }
+
 }
 
 void enemy_update(Entity *self)
@@ -84,6 +123,8 @@ void enemy_update(Entity *self)
     //if (self->frame >= 15)self->frame = 0;
     //46 to 65 is run
     //0 to 15 is idle
+    self->winCool++;
+    enemy_rewind(self);
     gfc_vector2d_add(self->position, self->position, self->velocity);
     self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
 

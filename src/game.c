@@ -110,7 +110,17 @@ int main(int argc, char * argv[])
             //for(int k = list; k>=0; k--)
                 //player->position = gfc_list_get_nth(rewind,k);
         //}
-        
+
+        //After player rewinds.
+        /*if(self->win==0)
+        {
+            if(self->currentRewind==0 && self->rewinding==0)
+                self->currentRewind= self->rewindNumber;
+            self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
+            self->rewinding=1;
+        }
+        */
+
         if((i%400)==0)
         {
             entity_rhythm(platform);
@@ -137,7 +147,10 @@ int main(int argc, char * argv[])
         if((i%10)==0)
         {
             if(player->win==0)
+            {
                 entity_rhythm(player);
+                entity_system_tape();
+            }
         }
         entity_system_think();
         entity_system_update();

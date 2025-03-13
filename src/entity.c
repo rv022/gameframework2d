@@ -182,7 +182,8 @@ void entity_system_collision()
                                         entity_system.entity_list[i].win=1;
 
                                 }
-                                entity_collide(&entity_system.entity_list[i]);
+                                if(entity_system.entity_list[j].type!= 1 || entity_system.entity_list[i].type!= 1)
+                                    entity_collide(&entity_system.entity_list[i]);
                             }
                         }
                     }
@@ -200,6 +201,58 @@ void entity_free(Entity *self)
     {
         gf2d_sprite_free(self->sprite);
         if(self->free)self->free(self->data);
+    }
+}
+
+void entity_rewind(Entity *self)
+{
+    if(!self)return;
+    if(self->win==0)
+    {
+        if(self->currentRewind==0 && self->rewinding==0)
+            self->currentRewind= self->rewindNumber;
+        self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
+        self->rewinding=1;
+    }
+    if(self->rewind)self->rewind(self);
+}
+void entity_system_stop_rewind()
+{
+    int i;
+    for(i = 0; i<entity_system.entity_max;i++)
+    {
+        if(!entity_system.entity_list[i]._inuse)continue;
+        entity_system.entity_list[i].rewinding=0;
+    }
+
+}
+
+void entity_system_rewind()
+{
+    int i;
+    for(i = 0; i<entity_system.entity_max;i++)
+    {
+        if(!entity_system.entity_list[i]._inuse)continue;
+        entity_rewind(&entity_system.entity_list[i]);
+    }
+
+}
+
+void entity_tape(struct Entity_S *self)
+{
+    {
+        if(!self)return;
+        if(self->tape)self->tape(self);
+    }
+}
+
+void entity_system_tape(struct Entity_S *self)
+{
+    int i;
+    for(i = 0; i<entity_system.entity_max;i++)
+    {
+        if(!entity_system.entity_list[i]._inuse)continue;
+        entity_tape(&entity_system.entity_list[i]);
     }
 }
 
