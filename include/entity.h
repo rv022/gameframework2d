@@ -19,9 +19,15 @@ typedef struct Entity_S //forward declaring struct while defining it
     int directionLeft; //0 is not moving, 1 if is
     int directionRight; //0 is not moving, 1 if is
     int jump; //0 is not moving, 1 if is
+    int jumpStrength;
+    int dash; //0 is not moving, 1 if is
+    int dashStrength;
     int verticalCollision; //0 if not, 1 if yes
     int type; //1 = player, 2 = enemy, 3 = platform
     int moving; //0 if still, 1 if up, 2 down,3 left, 4 right
+    int onQuarter;
+    int onEighth;
+    int success;
     GFC_Vector2D *rewindPosition;
     int rewindNumber;
     int currentRewind;

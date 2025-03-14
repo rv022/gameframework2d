@@ -37,6 +37,7 @@ int main(int argc, char * argv[])
     Sprite *mouse;
     Sprite *rhythmNote;
     Sprite *cassette;
+    Sprite *onQuarter;
     Entity *player;
     Entity *enemy;
     Entity *strongudenemy;
@@ -72,6 +73,7 @@ int main(int argc, char * argv[])
     mouse = gf2d_sprite_load_all("images/pointer.png",32,32,16,0);
     rhythmNote = gf2d_sprite_load_image("images/quarterNote.png");
     cassette = gf2d_sprite_load_image("images/cassette.png");
+    onQuarter = gf2d_sprite_load_image("images/onQuarter.png");
 
 
     slog("press [escape] to quit");
@@ -97,6 +99,7 @@ int main(int argc, char * argv[])
         SDL_PumpEvents();   // update SDL's internal event structures
         keys = SDL_GetKeyboardState(NULL); // get the keyboard state for this frame
         i+=1;
+        //slog("%d",i);
         l-=1;
         //list = gfc_list_get_count(rewind);
         //slog("%d",i);
@@ -120,7 +123,11 @@ int main(int argc, char * argv[])
             self->rewinding=1;
         }
         */
-
+        if(((i+15)%100)==0)
+        {
+            slog("%d",(i));
+            player->onQuarter=30;
+        }
 
         if(player->rewinding==0)
         {
@@ -172,6 +179,8 @@ int main(int argc, char * argv[])
             entity_system_draw();
 
             //UI elements last
+            if(player->success>0)
+                gf2d_sprite_draw_image(onQuarter,gfc_vector2d(0,50));
             gf2d_sprite_draw(
                 mouse,
                 gfc_vector2d(mx,my),
@@ -184,7 +193,7 @@ int main(int argc, char * argv[])
 
             if((i%100)==0)
             {
-                l=35;
+                l=30;
                 gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
                 //rewindPosition=player->position;
                 //gfc_list_append(rewind,rewindPosition);

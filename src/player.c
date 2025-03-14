@@ -9,6 +9,7 @@ void player_free(Entity *self);
 void player_collide(Entity *self);
 void player_move(Entity *self);
 void player_jump(Entity *self);
+void player_dash(Entity *self);
 void player_rhythm(Entity *self);
 
 Entity *player_new_entity()
@@ -45,6 +46,12 @@ Entity *player_new_entity()
     self->rewinding = 0;
     self->win = 0;
     self->winCool = 0;
+    self->onQuarter = 0;
+    self->jumpStrength=0;
+    self->jump=0;
+    self->dashStrength=0;
+    self->dash=0;
+    self->success=0;
 
     return self;
 }
@@ -78,7 +85,6 @@ void player_rewind(Entity *self)
 void player_think(Entity *self)
 {
     GFC_Vector2D dir = {0};
-    int jump = 0;
     if(!self)return;
     SDL_Event event;
     while(SDL_PollEvent(&event))
@@ -95,9 +101,45 @@ void player_think(Entity *self)
                     self->directionRight=1;
                     self->flip = gfc_vector2d_dup(gfc_vector2d(0,0));
                     break;
-                case SDLK_j:
-                    self->jump=12;
+                case SDLK_k:
+                    if(self->jump==0)
+                    {
+                        if(self->jumpStrength<=0 && self->onQuarter>0)
+                        {
+                            self->jumpStrength=24;
+                            self->success=self->onQuarter;
+                        }
+                        else if(self->jumpStrength<=0)
+                            self->jumpStrength=12;
+                        self->jump=1;
+                    }
                     break;
+                case SDLK_j:
+                    if(self->dash==0)
+                    {
+                        if(self->dashStrength<=0 && self->onQuarter>0)
+                        {
+                            self->dashStrength=24;
+                            self->success=self->onQuarter;
+                        }
+                        else if(self->dashStrength<=0)
+                            self->dashStrength=12;
+                        self->dash=1;
+                    }
+                    break;
+                /*case SDLK_SPACE:
+                    if(self->dash==0)
+                    {
+                        if(self->dashStrength<=0 && self->onQuarter>0)
+                        {
+                            self->dashStrength=24;
+                            self->success=self->onQuarter;
+                        }
+                        else if(self->dashStrength<=0)
+                            self->dashStrength=12;
+                        self->dash=1;
+                    }
+                    break;*/
                 case SDLK_r:
                     if(self->win==0)
                     {
@@ -143,10 +185,6 @@ void player_think(Entity *self)
             }
         }
     }
-    if(jump==1)
-    {
-        dir.y=-1;
-    }
     gfc_vector2d_normalize(&dir);
     gfc_vector2d_scale(self->velocity,dir,3);
 }
@@ -165,25 +203,44 @@ void player_move(Entity *self)
 void player_jump(Entity *self)
 {
     //slog("player jumped");
-    if(self->jump>0)
+    if(self->jumpStrength>0)
     {
         self->velocity.y -= 12;
-        self->jump-=1;
+        self->jumpStrength-=1;
     }
+    if(self->position.y >= 835 && self->jumpStrength<=0)
+        self->jump=0;
+}
+
+void player_dash(Entity *self)
+{
+    //slog("player jumped");
+    if(self->dashStrength>0)
+    {
+        if((self->directionLeft)==1)
+            self->velocity.x -= 12;
+        if((self->directionRight)==1)
+            self->velocity.x += 12;
+        self->dashStrength-=1;
+    }
+    if(self->position.y >= 835 && self->dashStrength<=0)
+        self->dash=0;
 }
 
 void player_update(Entity *self)
 {
 
     if(!self)return;
-    self->frame += 0.1;
     self->winCool++;
+    self->onQuarter--;
+    self->success--;
     if (self->frame >= 15)self->frame = 0;
     //46 to 65 is run
     //0 to 15 is idle
     player_move(self);
     player_gravity(self);
     player_jump(self);
+    player_dash(self);
     player_rewind(self);
     gfc_vector2d_add(self->position, self->position, self->velocity);
     if(self->rewinding==0)
@@ -200,6 +257,8 @@ void player_collide(Entity *self)
     if(!self)return;
     if(self->verticalCollision==1)
     {
+        self->jump=0;
+        self->dash=0;
         if(self->moving==1)
         {
             gfc_vector2d_add(self->position, self->position, gfc_vector2d_multiply(self->velocity,gfc_vector2d(-1,-2)));
