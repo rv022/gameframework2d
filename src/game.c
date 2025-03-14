@@ -38,6 +38,7 @@ int main(int argc, char * argv[])
     Sprite *rhythmNote;
     Sprite *cassette;
     Sprite *onQuarter;
+    Sprite *onEighth;
     Entity *player;
     Entity *enemy;
     Entity *strongudenemy;
@@ -74,6 +75,7 @@ int main(int argc, char * argv[])
     rhythmNote = gf2d_sprite_load_image("images/quarterNote.png");
     cassette = gf2d_sprite_load_image("images/cassette.png");
     onQuarter = gf2d_sprite_load_image("images/onQuarter.png");
+    onEighth = gf2d_sprite_load_image("images/onEighth.png");
 
 
     slog("press [escape] to quit");
@@ -125,8 +127,11 @@ int main(int argc, char * argv[])
         */
         if(((i+15)%100)==0)
         {
-            slog("%d",(i));
             player->onQuarter=30;
+        }
+        if((((i+15)%50)==0) && ((i+15)%100)!=0)
+        {
+            player->onEighth=30;
         }
 
         if(player->rewinding==0)
@@ -179,8 +184,10 @@ int main(int argc, char * argv[])
             entity_system_draw();
 
             //UI elements last
-            if(player->success>0)
-                gf2d_sprite_draw_image(onQuarter,gfc_vector2d(0,50));
+            if(player->successQuarter>0 && player->onQuarter>0)
+                gf2d_sprite_draw_image(onQuarter,gfc_vector2d(0,0));
+            if(player->successEighth>0 && player->onEighth>0)
+                gf2d_sprite_draw_image(onEighth,gfc_vector2d(50,0));
             gf2d_sprite_draw(
                 mouse,
                 gfc_vector2d(mx,my),
@@ -201,7 +208,7 @@ int main(int argc, char * argv[])
             if(l>0)
                 gf2d_sprite_draw_image(rhythmNote,gfc_vector2d(550,0));
             if(player->win==2)
-                gf2d_sprite_draw_image(cassette,gfc_vector2d(0,0));
+                gf2d_sprite_draw_image(cassette,gfc_vector2d(1000,0));
 
 
 
