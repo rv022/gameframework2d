@@ -20,6 +20,7 @@
 #include "winplatform.h"
 #include "player.h"
 #include "world.h"
+#include "mainmenu.h"
 
 int main(int argc, char * argv[])
 {
@@ -95,6 +96,7 @@ int main(int argc, char * argv[])
     world = world_load("maps/testworld.map");
     world_setup_camera(world);
 
+    main_menu(cassette);
     /*main game loop*/
     while(!done)
     {
@@ -215,7 +217,12 @@ int main(int argc, char * argv[])
 
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
         
-        if (keys[SDL_SCANCODE_ESCAPE])done = 1; // exit condition
+        if (keys[SDL_SCANCODE_ESCAPE])
+        {
+            if(main_menu(cassette))
+                done = 1; // exit condition
+            //main_menu(cassette);
+        }
         //slog("Rendering at %f FPS",gf2d_graphics_get_frames_per_second());
     }
     entity_free(player);

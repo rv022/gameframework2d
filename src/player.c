@@ -68,6 +68,7 @@ void player_rhythm(Entity *self)
     if(!self)return;
     self->rewindPosition[self->rewindNumber] = self->position;
     self->rewindNumber++;
+    //slog("player rewind number %i", self->rewindNumber);
 }
 
 void player_rewind(Entity *self)
@@ -84,6 +85,7 @@ void player_rewind(Entity *self)
         {
             self->position = self->rewindPosition[self->currentRewind];
             self->currentRewind++;
+            //slog("player current rewind %i", self->currentRewind);
             self->winCool=0;
         }
     }

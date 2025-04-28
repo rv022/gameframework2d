@@ -58,6 +58,7 @@ void strongudenemy_tape(Entity *self)
 {
     self->rewindPosition[self->rewindNumber] = self->position;
     self->rewindNumber++;
+    //slog("rewindNumber %i", self->rewindNumber);
 }
 
 void strongudenemy_play(Entity *self)
@@ -67,6 +68,7 @@ void strongudenemy_play(Entity *self)
     {
         if(self->currentRewind<self->rewindNumber && self->rewinding==1)
         {
+            //slog("currentRewind %i", self->currentRewind);
             self->position = self->rewindPosition[self->currentRewind];
             self->currentRewind++;
             self->winCool=0;
