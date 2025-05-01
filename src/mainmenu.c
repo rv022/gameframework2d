@@ -6,7 +6,175 @@
 #include "entity.h"
 #include "mainmenu.h"
 
-int main_menu(Sprite *image){
+typedef struct
+{
+    Uint32 button_max;
+    Button *button_list;
+}ButtonManager;
+
+static ButtonManager menu_system = {0};
+
+void menu_system_close()
+{
+    if(menu_system.button_list)
+    {
+        menu_system_free_all();
+        free(menu_system.button_list);
+        menu_system.button_list = NULL;
+    }
+    memset(&menu_system.button_list,0,sizeof(ButtonManager));
+}
+
+void menu_system_init(Uint32 maxButtons)
+{
+    if(menu_system.button_list)
+    {
+        slog("cannot have two instances of an button manager, one is already active.");
+        return;
+    }
+    if(!maxButtons)
+    {
+        slog("cannot initialize menu system for zero buttons");
+        return;
+    }
+    menu_system.button_list = gfc_allocate_array(sizeof(Button),maxButtons);
+    if(!menu_system.button_list)
+    {
+        slog("failed to allocate %i buttons", maxButtons);
+        return;
+    }
+    menu_system.button_max = maxButtons;
+    atexit(menu_system_close);
+}
+
+void menu_system_free_all()
+{
+    int i;
+    for(i = 0; i<menu_system.button_max;i++)
+    {
+        if(menu_system.button_list[i]._inuse)
+        {
+            button_free(&menu_system.button_list[i]);
+        }
+    }
+}
+
+
+Button *button_new()
+{
+    int i;
+    for(i = 0; i<menu_system.button_max;i++)
+    {
+        if(menu_system.button_list[i]._inuse)continue;
+        memset(&menu_system.button_list[i],0,sizeof(Button));
+        menu_system.button_list[i]._inuse = 1;
+        return &menu_system.button_list[i];
+    }
+    slog("no more available buttons.");
+    return NULL;
+}
+
+
+void button_free(Button *self)
+{
+    if(!self)return;
+    if(self->sprite)
+    {
+        gf2d_sprite_free(self->sprite);
+        if(self->free)self->free(self->data);
+    }
+
+}
+
+void button_collide(Button *self)
+{
+        if(!self)return;
+        if(self->collide)self->collide(self);
+}
+
+
+void menu_system_collision()
+{
+    return;
+}
+
+void button_think(Button *self)
+{
+    if(!self)return;
+    if(self->think)self->think(self);
+}
+
+void menu_system_think()
+{
+    int i;
+    for(i = 0; i<menu_system.button_max;i++)
+    {
+        if(!menu_system.button_list[i]._inuse)continue;
+        button_think(&menu_system.button_list[i]);
+    }
+
+}
+
+void button_update(Button *self)
+{
+    if(!self)return;
+    if(self->update)self->update(self);
+}
+
+void menu_system_update()
+{
+    int i;
+    for(i = 0; i<menu_system.button_max;i++)
+    {
+        if(!menu_system.button_list[i]._inuse)continue;
+        button_update(&menu_system.button_list[i]);
+    }
+
+}
+
+void button_draw(Button *self)
+{
+    if(!self)return;
+    if(!self->sprite)return;
+    gf2d_sprite_draw(
+                    (self->sprite),
+                     self->position,
+                     NULL,
+                     NULL,
+                     NULL,
+                     NULL,
+                     NULL,
+                     (Uint32)self->frame
+    );
+}
+void menu_system_draw()
+{
+    int i;
+    for(i = 0; i<menu_system.button_max;i++)
+    {
+        if(!menu_system.button_list[i]._inuse)continue;
+        button_draw(&menu_system.button_list[i]);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int main_menu(){
 
     int menu=0;
 
@@ -29,9 +197,8 @@ int main_menu(Sprite *image){
 
     gf2d_graphics_clear_screen();
 
+    menu_system_draw();
 
-
-    gf2d_sprite_draw_image(image,gfc_vector2d(500,250));
 
     gf2d_sprite_draw(
                 mouse,

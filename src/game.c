@@ -21,6 +21,7 @@
 #include "player.h"
 #include "world.h"
 #include "mainmenu.h"
+#include "playbutton.h"
 
 int main(int argc, char * argv[])
 {
@@ -30,6 +31,7 @@ int main(int argc, char * argv[])
     World *world;
     int i = 0;
     int l = 35;
+    int editor = 0;
     //int list = 0;
     //int k = 0;
 
@@ -51,6 +53,7 @@ int main(int argc, char * argv[])
     Entity *teleportPlatform;
     Entity *launchPlatform;
     Entity *winPlatform;
+    Button *playbutton;
 
     GFC_Color mouseGFC_Color = gfc_color8(0,128,255,200);
     
@@ -68,6 +71,7 @@ int main(int argc, char * argv[])
     gf2d_graphics_set_frame_delay(16);
     gf2d_sprite_init(1024);
     entity_system_init(1024);
+    menu_system_init(1024);
     SDL_ShowCursor(SDL_DISABLE);
     camera_set_size(gfc_vector2d(1200,720));
     
@@ -96,7 +100,9 @@ int main(int argc, char * argv[])
     world = world_load("maps/testworld.map");
     world_setup_camera(world);
 
-    main_menu(cassette);
+    playbutton = play_new();
+
+    main_menu();
     /*main game loop*/
     while(!done)
     {
@@ -108,9 +114,13 @@ int main(int argc, char * argv[])
         //list = gfc_list_get_count(rewind);
         //slog("%d",i);
         /*update things here*/
-        SDL_GetMouseState(&mx,&my);
-        mf+=0.1;
-        if (mf >= 16.0)mf = 0;
+        if(editor == 1)
+        {
+            SDL_GetMouseState(&mx,&my);
+            mf+=0.1;
+            if (mf >= 16.0)mf = 0;
+        }
+
 
         //if (keys[SDL_SCANCODE_R])
         //{
@@ -190,7 +200,10 @@ int main(int argc, char * argv[])
                 gf2d_sprite_draw_image(onQuarter,gfc_vector2d(0,0));
             if(player->successEighth>0 && player->onEighth>0)
                 gf2d_sprite_draw_image(onEighth,gfc_vector2d(50,0));
-            gf2d_sprite_draw(
+
+            if(editor == 1)
+            {
+                gf2d_sprite_draw(
                 mouse,
                 gfc_vector2d(mx,my),
                 NULL,
@@ -199,6 +212,7 @@ int main(int argc, char * argv[])
                 NULL,
                 &mouseGFC_Color,
                 (int)mf);
+            }
 
             if((i%100)==0)
             {
@@ -214,12 +228,11 @@ int main(int argc, char * argv[])
 
 
 
-
         gf2d_graphics_next_frame();// render current draw frame and skip to the next frame
-        
-        if (keys[SDL_SCANCODE_ESCAPE])
+        //done = 1; // exit condition
+         if (keys[SDL_SCANCODE_ESCAPE])
         {
-            if(main_menu(cassette))
+            if(main_menu())
                 done = 1; // exit condition
             //main_menu(cassette);
         }
