@@ -24,8 +24,8 @@ Button *play_new()
         16,
         0);
     self->frame = 0;
-    self->position = gfc_vector2d(50,50);
-    self->box = gfc_rect(self->position.x-40, self->position.y+55, 80, 110);
+    self->position = gfc_vector2d(500,300);
+    self->box = gfc_rect(self->position.x, self->position.y, 128, 128);
     self->count = 0;
     self->think = play_think;
     self->update = play_update;

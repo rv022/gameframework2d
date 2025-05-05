@@ -93,9 +93,15 @@ void button_collide(Button *self)
 }
 
 
-void menu_system_collision()
+void menu_system_collision(int x, int y)
 {
-    return;
+    int i;
+    for(i = 0; i<menu_system.button_max;i++)
+    {
+        if(!menu_system.button_list[i]._inuse)continue;
+        if(gfc_point_in_rect(gfc_vector2d(x,y), menu_system.button_list[i].box))
+            slog("button clicked");
+    }
 }
 
 void button_think(Button *self)
@@ -217,15 +223,16 @@ int main_menu(){
     {
         if(event.type==SDL_MOUSEBUTTONDOWN)
         {
-            menu = 1;
-            return 0;
+            //menu = 1;
+            menu_system_collision(mx,my);
+            //return 1; //needs to be 0 to start game
         }
         if(event.type==SDL_KEYDOWN)
         {
             switch (event.key.keysym.sym)
             {
                 case SDLK_p:
-                    menu = 1;
+                    //menu = 1;
                     return 0;
                 case SDLK_ESCAPE:
                     return 1;
@@ -234,5 +241,5 @@ int main_menu(){
 
 
 }
-return 0;
+//return 0;
 }

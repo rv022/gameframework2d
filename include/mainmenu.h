@@ -4,7 +4,9 @@
 #include "gfc_text.h"
 #include "gfc_vector.h"
 #include "gfc_shape.h"
+#include "gfc_primitives.h"
 #include "gf2d_sprite.h"
+
 
 typedef struct Button_S //forward declaring struct while defining it
 {
@@ -45,7 +47,7 @@ void menu_system_think();
 
 void button_collide();
 
-void menu_system_collision();
+void menu_system_collision(int x, int y);
 
 void menu_system_update();
 
